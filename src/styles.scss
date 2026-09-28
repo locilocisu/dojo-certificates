@@ -1,0 +1,38 @@
+/* You can add global styles to this file, and also import other style files */
+
+html,
+body {
+    height: 100%;
+}
+body {
+    margin: 0;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.fab-button-container {
+    display: flex;
+    justify-content: center;
+    width: 120px;
+    position: fixed;
+    bottom: 40px;
+    right: 0px;
+}
+
+.edit-panel {
+    .mat-dialog-content {
+        height: calc(100% - 68px);
+        max-height: unset;
+    }
+
+    .mat-dialog-actions button.pull-right {
+        margin-left: auto;
+    }
+}
+
+.mat-sort-header-content {
+    user-select: none;
+}
+
+.mat-toolbar-single-row.thin {
+    height:45px;
+}

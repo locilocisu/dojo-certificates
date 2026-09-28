@@ -1,0 +1,11 @@
+@use '@angular/material' as mat;
+@use '@angular/material/prebuilt-themes/indigo-pink.css';
+
+@include mat.core();
+
+
+$my-app-primary: mat.define-palette(mat.$grey-palette, A700);
+$my-app-accent:  mat.define-palette(mat.$grey-palette, 900);
+$my-app-warn:    mat.define-palette(mat.$deep-orange-palette);
+$my-app-theme: mat.define-light-theme($my-app-primary, $my-app-accent, $my-app-warn);
+@include mat.all-component-themes($my-app-theme);

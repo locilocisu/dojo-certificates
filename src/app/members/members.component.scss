@@ -1,0 +1,22 @@
+.example-spacer {
+    flex: 1 1 auto;
+}
+
+.mat-sort-header-content {
+    user-select: none;
+    cursor: pointer;
+}
+
+mat-toolbar.main-toolbar {
+    button.add-member {
+        margin-right: 1em;
+        margin-top: -5px;
+        margin-left: 120px;
+    }
+}
+
+::ng-deep {
+    #searchInput .mdc-text-field {
+        background-color: white;
+    }
+}

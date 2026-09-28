@@ -1,0 +1,192 @@
+<mat-dialog-content>
+    <div class="container">
+        <div class="row">
+            <h2>Identification</h2>
+        </div>
+        <form [formGroup]="memberForm">
+            <div class="row">
+                <mat-form-field class="col">
+                    <mat-label>Name</mat-label>
+                    <input matInput formControlName="Name" required>
+                    <mat-error *ngIf="memberForm.controls.Name.errors && memberForm.controls.Name.errors['required']">
+                        Required</mat-error>
+                </mat-form-field>
+                <mat-form-field class="col">
+                    <mat-label>Member ID</mat-label>
+                    <input matInput formControlName="IdentificationID">
+                </mat-form-field>
+            </div>
+            <div class="row">
+                <mat-form-field class="col">
+                    <mat-label>Country</mat-label>
+                    <input matInput formControlName="Country">
+                </mat-form-field>
+                <mat-form-field class="col">
+                    <mat-label>City/State</mat-label>
+                    <input matInput formControlName="City">
+                </mat-form-field>
+                <mat-form-field class="col">
+                    <mat-label>Dojo</mat-label>
+                    <input matInput formControlName="Dojo">
+                </mat-form-field>
+            </div>
+        </form>
+        <div class="row">
+            <h2>Certificates</h2>
+        </div>
+        <form [formGroup]="certificateForm" #certNgForm="ngForm">
+            <div class="row cert-row">
+
+                <mat-form-field class="col-sm-2">
+                    <mat-label>Rank</mat-label>
+                    <mat-select formControlName="Rank" required>
+                        <ng-container *ngFor="let rank of ranks">
+                            <mat-option [value]="rank.value">{{rank.label}}</mat-option>
+                        </ng-container>
+                    </mat-select>
+                    <mat-error
+                        *ngIf="certificateForm.controls.Rank.errors && certificateForm.controls.Rank.errors['required']">
+                        Required</mat-error>
+                </mat-form-field>
+                <mat-form-field class="col-sm-2">
+                    <mat-label>Date</mat-label>
+                    <input matInput [matDatepicker]="picker" formControlName="Date" required>
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                    <mat-error
+                        *ngIf="certificateForm.controls.Date.errors && certificateForm.controls.Date.errors['required']">
+                        Required</mat-error>
+                </mat-form-field>
+                <mat-form-field class="col-sm-2">
+                    <mat-label>Code</mat-label>
+                    <input type="text" placeholder="Pick one" aria-label="Number" matInput [matAutocomplete]="auto"
+                        formControlName="Code" (keydown.space)="$event.preventDefault();">
+                    <mat-autocomplete #auto="matAutocomplete">
+                        <ng-container *ngFor="let code of existingCertificateCodes">
+                            <mat-option [value]="code">
+                                {{code}}
+                            </mat-option>
+                        </ng-container>
+                    </mat-autocomplete>
+                </mat-form-field>
+                <mat-form-field class="col-sm-2">
+                    <mat-label>Number</mat-label>
+                    <input matInput formControlName="Number" type="number">
+                    <button mat-icon-button matSuffix (click)="resetCertNumber(certificateForm.controls.Code, certificateForm.controls.Number)" type="button"
+                        matTooltip="Reset to the next available number for the certificate code">
+                        <mat-icon>restart_alt</mat-icon>
+                    </button>
+                    <mat-error
+                        *ngIf="certificateForm.controls.Number.errors && certificateForm.controls.Number.errors['dupe']">
+                        Number already used</mat-error>
+                    <mat-error
+                        *ngIf="certificateForm.controls.Number.errors && certificateForm.controls.Number.errors['nocode']">
+                        Set code to generate number</mat-error>
+                    <mat-error
+                        *ngIf="certificateForm.controls.Number.errors && certificateForm.controls.Number.errors['required']">
+                        Number required with code</mat-error>
+                </mat-form-field>
+
+                <div class="col-sm-3">
+                    <button mat-icon-button color="primary" aria-label="add" (click)="addCertificate(certNgForm)">
+                        <mat-icon>add</mat-icon>
+                    </button>
+                    <button mat-icon-button color="warn" aria-label="clear" (click)="clearCertificateForm(certNgForm)"
+                        type="button">
+                        <mat-icon>clear</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </form>
+        <form [formGroup]="inlineCertificateForm" #inlineCertNgForm="ngForm">
+            <ng-container *ngFor="let certificate of certificates | async as certificates$">
+                <mat-divider></mat-divider>
+                <div class="row cert-row" *ngIf="currentEditingCertificate != certificate">
+                    <div class="col-sm-6 content" (click)="editCertificate(certificate)">
+                        <div class="row">
+                            <div class="col-sm-4">{{certificate.RankString}}</div>
+                            <div class="col-sm-4">{{certificate.DateString}}</div>
+                            <div class="col-sm-4">{{certificate.CodeNumber}}</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2"></div>
+                    <div class="col-sm-1">
+                        <button mat-icon-button aria-label="more" [matMenuTriggerFor]="menu"
+                            [matMenuTriggerData]="{cert: certificate }">
+                            <mat-icon>more_vert</mat-icon>
+                        </button>
+                    </div>
+                </div>
+                <div class="row cert-row" *ngIf="currentEditingCertificate == certificate">
+
+                    <mat-form-field class="col-sm-2" floatLabel="auto">
+                        <mat-label>Rank</mat-label>
+                        <mat-select formControlName="Rank" required>
+                            <ng-container *ngFor="let rank of ranks">
+                                <mat-option [value]="rank.value">{{rank.label}}</mat-option>
+                            </ng-container>
+                        </mat-select>
+                        <mat-error
+                            *ngIf="inlineCertificateForm.controls.Rank.errors && inlineCertificateForm.controls.Rank.errors['required']">
+                            Required</mat-error>
+                    </mat-form-field>
+                    <mat-form-field class="col-sm-2" floatLabel="auto">
+                        <mat-label>Date</mat-label>
+                        <input matInput [matDatepicker]="picker" formControlName="Date" required>
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                        <mat-error
+                            *ngIf="inlineCertificateForm.controls.Date.errors && inlineCertificateForm.controls.Date.errors['required']">
+                            Required</mat-error>
+                    </mat-form-field>
+                    <mat-form-field class="col-sm-2" floatLabel="auto">
+                        <mat-label>Code</mat-label>
+                        <input type="text" placeholder="Pick one" aria-label="Number" matInput [matAutocomplete]="auto"
+                            formControlName="Code" (keydown.space)="$event.preventDefault();">
+                        <mat-autocomplete #auto="matAutocomplete">
+                            <ng-container *ngFor="let code of existingCertificateCodes">
+                                <mat-option [value]="code">
+                                    {{code}}
+                                </mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                    <mat-form-field class="col-sm-2" floatLabel="auto">
+                        <mat-label>Number</mat-label>
+                        <input matInput formControlName="Number" type="number">
+                        <button mat-icon-button matSuffix (click)="resetCertNumber(inlineCertificateForm.controls.Code, inlineCertificateForm.controls.Number)" type="button"
+                            matTooltip="Reset to the next available number for the certificate code">
+                            <mat-icon>restart_alt</mat-icon>
+                        </button>
+                        <mat-error
+                            *ngIf="inlineCertificateForm.controls.Number.errors && inlineCertificateForm.controls.Number.errors['dupe']">
+                            Number already used</mat-error>
+                        <mat-error
+                            *ngIf="inlineCertificateForm.controls.Number.errors && inlineCertificateForm.controls.Number.errors['nocode']">
+                            Set code to generate number</mat-error>
+                        <mat-error
+                            *ngIf="inlineCertificateForm.controls.Number.errors && inlineCertificateForm.controls.Number.errors['required']">
+                            Number required with code</mat-error>
+                    </mat-form-field>
+
+                    <div class="col-sm-1">
+                        <button mat-icon-button aria-label="save" (click)="saveCertificate(certificate)">
+                            <mat-icon [ngClass]="inlineCertificateForm.invalid ? 'mat-error' : ''"
+                                style="display: inline-block;">save</mat-icon>
+                        </button>
+                    </div>
+                </div>
+            </ng-container>
+        </form>
+        <mat-menu #menu="matMenu" xPosition="after">
+            <ng-template matMenuContent let-cert="cert">
+                <button mat-menu-item (click)="deleteCertificate(cert)">Delete</button>
+            </ng-template>
+        </mat-menu>
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-button mat-flat-button color="warn" [mat-dialog-close]="true" (click)="deleteMember()"
+        [disabled]="!isEdit">Delete</button>
+    <button mat-button [mat-dialog-close]="true" class="pull-right">Close</button>
+</mat-dialog-actions>

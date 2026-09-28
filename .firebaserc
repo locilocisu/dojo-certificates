@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "shougenkai-475ef": {
+      "hosting": {
+        "shougen-organizer": [
+          "shougenkai-475ef"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "shougenkai-475ef"
+  }
+}
